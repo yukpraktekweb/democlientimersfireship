@@ -1310,86 +1310,117 @@
      JAVASCRIPT LOGIC (app.js)
      ========================================== -->
 <script>
-    // --- 1. CONFIG DINAMIS (Ganti Baris 1313) ---
+    // --- 1. CONFIG DINAMIS ---
+    // Pake function/getter biar datanya selalu fresh dari localStorage
     const config = {
-        apiUrl: localStorage.getItem('iMers_webAppUrl'),
-        license: localStorage.getItem('iMers_licenseKey')
+        get apiUrl() { return localStorage.getItem('iMers_webAppUrl'); },
+        get license() { return localStorage.getItem('iMers_licenseKey'); }
     };
 
-    // --- 2. API CALL BARU (Ganti Baris 1338 - 1384) ---
-    async function apiCall(action, payload = null) {
-        if (!config.apiUrl) return;
-        
-        // Setiap request membawa lisensi agar divalidasi oleh Master Library lo
-        const url = `${config.apiUrl}?action=${action}&license=${config.license}`;
-        
-        let options = { 
-            method: 'POST', // Kita paksa POST agar lebih aman kirim payload
-            body: JSON.stringify(payload)
-        };
+    // FIX: Fungsi Toast sederhana biar script nggak mati pas dipanggil
+    window.showToast = (msg, type = "success") => {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-5 right-5 px-6 py-3 rounded-xl text-white font-bold z-[10000] shadow-2xl transition-all duration-300 ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`;
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    };
 
+    // --- 2. API CALL ---
+    async function apiCall(action, payload = null) {
+        if (!config.apiUrl) return null;
+        const url = `${config.apiUrl}?action=${action}&license=${config.license}`;
         try {
-            const response = await fetch(url, options);
+            const response = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
             const result = await response.json();
             
-            // Proteksi: Jika lisensi dicabut/expired, otomatis kunci aplikasi
             if (result && result.isLocked) {
-                window.showToast("Akses Terkunci: " + result.message, "error");
+                window.showToast("Akses Terkunci!", "error");
                 localStorage.clear();
-                setTimeout(() => window.location.reload(), 2500);
+                setTimeout(() => window.location.reload(), 2000);
                 return null;
             }
-            
-            if (!result.success) throw new Error(result.error || "Terjadi kesalahan pada server");
             return result;
         } catch (err) {
-            console.error(`API Call Error (${action}):`, err);
-            throw err;
+            console.error("API Call Error:", err);
+            return { success: false, message: "Koneksi ke database gagal." };
         }
     }
 
     // --- 3. LOGIKA GEMBOK (Gatekeeper) ---
-    window.addEventListener('load', () => {
-        // Cek apakah sudah ada URL & Lisensi di memori browser kustomer
+    // Fungsi ini ngatur view mana yang harus tampil (Setup vs Login vs App)
+    function checkGatekeeper() {
+        const viewSetup = document.getElementById('view-setup');
+        const viewAuth = document.getElementById('view-auth');
+        const viewApp = document.getElementById('view-app');
+
+        // Step 1: Jika URL atau Lisensi belum ada, paksa isi Pintu Biru
         if (!config.apiUrl || !config.license) {
-            document.getElementById('view-setup').classList.remove('hidden');
-            document.getElementById('view-app').classList.add('hidden');
+            if (viewSetup) viewSetup.classList.remove('hidden');
+            if (viewAuth) viewAuth.classList.add('hidden');
+            if (viewApp) viewApp.classList.add('hidden');
         } else {
-            document.getElementById('view-setup').classList.add('hidden');
-            document.getElementById('view-app').classList.remove('hidden');
-            // Jalankan inisialisasi dashboard lama lo
-            if (typeof initDashboard === 'function') initDashboard();
+            // Step 2: Jika sudah aktif, tutup Pintu Biru
+            if (viewSetup) viewSetup.classList.add('hidden');
+            
+            // Step 3: Cek status Login (Gunakan window.appState.user lo)
+            if (!window.appState?.user) {
+                // Tampilkan halaman Login (view-auth)
+                if (viewAuth) viewAuth.classList.remove('hidden');
+                if (viewApp) viewApp.classList.add('hidden');
+            } else {
+                // Tampilkan Dashboard App (view-app)
+                if (viewAuth) viewAuth.classList.add('hidden');
+                if (viewApp) viewApp.classList.remove('hidden');
+                if (typeof initDashboard === 'function') initDashboard();
+            }
         }
-    });
+    }
+
+    window.addEventListener('load', checkGatekeeper);
 
     // --- 4. HANDLER FORM AKTIVASI ---
     const setupForm = document.getElementById('setupForm');
     if (setupForm) {
         setupForm.onsubmit = async (e) => {
             e.preventDefault();
+            
             const btn = document.getElementById('btnActivate');
             const urlInput = document.getElementById('setupUrl').value.trim();
             const keyInput = document.getElementById('setupLicense').value.trim().toUpperCase();
+
+            if (!urlInput || !keyInput) return window.showToast("Lengkapi data!", "error");
 
             btn.disabled = true;
             btn.innerHTML = '<i class="ph ph-circle-notch animate-spin"></i> Memverifikasi...';
 
             try {
-                // Panggil Bridge kustomer untuk verifikasi ke Master Library
-                const res = await fetch(`${urlInput}?action=check&key=${keyInput}&ssid=ACT_CHECK`);
+                // Panggil Bridge kustomer
+                const res = await fetch(`${urlInput}?action=check&key=${keyInput}`);
                 const result = await res.json();
 
                 if (result.success) {
+                    // Simpan permanen ke memori browser
                     localStorage.setItem('iMers_webAppUrl', urlInput);
                     localStorage.setItem('iMers_licenseKey', keyInput);
-                    window.showToast("✅ Aktivasi Berhasil!", "success");
+                    
+                    window.showToast("✅ Aktivasi Berhasil! Membuka Login...", "success");
+                    
+                    // Reload halaman agar Gatekeeper ngebuka View Login
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
                     window.showToast("❌ Gagal: " + result.message, "error");
+                    btn.disabled = false;
+                    btn.innerHTML = 'AKTIFKAN APLIKASI';
                 }
             } catch (err) {
-                window.showToast("❌ Gagal konek! Pastikan URL benar & sudah di-deploy.", "error");
-            } finally {
+                window.showToast("❌ Gagal konek! Cek URL & Deployment.", "error");
                 btn.disabled = false;
                 btn.innerHTML = 'AKTIFKAN APLIKASI';
             }
