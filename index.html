@@ -96,39 +96,6 @@
 <body class="text-slate-800 dark:text-slate-100 antialiased h-screen overflow-hidden flex flex-col transition-colors duration-300">
 
     <!-- ==========================================
-     START: SETUP VIEW (Pintu Masuk)
-     ========================================== -->
-<div id="view-setup" class="hidden min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-600 to-purple-700 z-[9999] fixed inset-0">
-    <div class="w-full max-w-md p-8 glass rounded-[2.5rem] shadow-2xl bg-white/20 backdrop-blur-xl border border-white/30">
-        <div class="text-center mb-8 text-white">
-            <div class="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-white/30 shadow-inner">
-                <i class="ph ph-rocket-launch text-4xl"></i>
-            </div>
-            <h1 class="text-3xl font-black tracking-tight">iMersFireship</h1>
-            <p class="text-white/70 text-sm mt-2 font-medium">Hubungkan Dashboard dengan Backend Anda.</p>
-        </div>
-
-        <form id="setupForm" class="space-y-5">
-            <div>
-                <label class="block text-xs font-black text-white/80 uppercase tracking-widest mb-2">Google Web App URL</label>
-                <input type="url" id="setupUrl" placeholder="[https://script.google.com/macros/s/.../exec](https://script.google.com/macros/s/.../exec)" 
-                       class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl outline-none text-white placeholder:text-white/30 focus:bg-white/20 transition-all text-sm" required>
-            </div>
-            <div>
-                <label class="block text-xs font-black text-white/80 uppercase tracking-widest mb-2">License Key</label>
-                <input type="text" id="setupLicense" placeholder="IMFIRE-XXXX-XXXX" 
-                       class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl outline-none text-white placeholder:text-white/30 focus:bg-white/20 transition-all text-sm font-mono uppercase" required>
-            </div>
-            <button type="submit" id="btnActivate" class="w-full bg-white text-indigo-600 font-black py-4 rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-2">
-                AKTIFKAN APLIKASI <i class="ph ph-arrow-right font-bold"></i>
-            </button>
-        </form>
-    </div>
-</div>
-
-    <div id="view-app" class="hidden flex-1 flex h-screen overflow-hidden">
-    
-    <!-- ==========================================
          CHECKOUT VIEW (PUBLIC)
          ========================================== -->
     <div id="view-checkout" class="hidden flex-1 overflow-y-auto relative w-full z-50 py-8 px-4">
@@ -1310,122 +1277,79 @@
      JAVASCRIPT LOGIC (app.js)
      ========================================== -->
 <script>
-    // --- 1. CONFIG DINAMIS ---
-    // Pake function/getter biar datanya selalu fresh dari localStorage
-    const config = {
-        get apiUrl() { return localStorage.getItem('iMers_webAppUrl'); },
-        get license() { return localStorage.getItem('iMers_licenseKey'); }
-    };
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_kSojhYotVUIpRyogw6b4h0q-IVWaO5EsH9iaGYDMzzBe-BTyUad37M6axhIAau_l/exec"; // GANTI DENGAN URL WEB APP LO
 
-    // FIX: Fungsi Toast sederhana biar script nggak mati pas dipanggil
-    window.showToast = (msg, type = "success") => {
-        const toast = document.createElement('div');
-        toast.className = `fixed bottom-5 right-5 px-6 py-3 rounded-xl text-white font-bold z-[10000] shadow-2xl transition-all duration-300 ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`;
-        toast.innerHTML = msg;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 500);
+    window.showToast = (m, t = 'success') => {
+        const el = document.getElementById('toast');
+        const msgEl = document.getElementById('toastMsg');
+        if (!el || !msgEl) return;
+        
+        msgEl.innerText = m;
+        
+        const icon = document.getElementById('toastIcon');
+        if (icon) {
+            icon.className = t === 'error' ? "ph ph-x-circle text-red-500 text-2xl drop-shadow-sm" : "ph ph-check-circle text-green-500 text-2xl drop-shadow-sm";
+        }
+        
+        el.className = t === 'error' 
+            ? "fixed bottom-6 right-6 glass text-slate-800 dark:text-white px-5 py-4 rounded-2xl shadow-2xl transform translate-y-0 opacity-100 transition-all duration-300 z-[60] flex items-center gap-3 border-l-4 border-l-red-500" 
+            : "fixed bottom-6 right-6 glass text-slate-800 dark:text-white px-5 py-4 rounded-2xl shadow-2xl transform translate-y-0 opacity-100 transition-all duration-300 z-[60] flex items-center gap-3 border-l-4 border-l-green-500";
+        
+        setTimeout(() => { 
+            // FIXED: Hapus class yang nahan pop-up, lalu tambah class untuk menyembunyikannya
+            el.classList.remove('translate-y-0', 'opacity-100');
+            el.classList.add('translate-y-20', 'opacity-0'); 
         }, 3000);
     };
 
-    // --- 2. API CALL ---
     async function apiCall(action, payload = null) {
-        if (!config.apiUrl) return null;
-        const url = `${config.apiUrl}?action=${action}&license=${config.license}`;
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-            
-            if (result && result.isLocked) {
-                window.showToast("Akses Terkunci!", "error");
-                localStorage.clear();
-                setTimeout(() => window.location.reload(), 2000);
-                return null;
-            }
-            return result;
-        } catch (err) {
-            console.error("API Call Error:", err);
-            return { success: false, message: "Koneksi ke database gagal." };
+        if (SCRIPT_URL === "URL_WEB_APP_APPS_SCRIPT_LO_DISINI" || !SCRIPT_URL) {
+            window.showToast("Script URL belum diganti di kode HTML!", "error");
+            throw new Error("URL Belum disetting");
         }
-    }
-
-    // --- 3. LOGIKA GEMBOK (Gatekeeper) ---
-    // Fungsi ini ngatur view mana yang harus tampil (Setup vs Login vs App)
-    function checkGatekeeper() {
-        const viewSetup = document.getElementById('view-setup');
-        const viewAuth = document.getElementById('view-auth');
-        const viewApp = document.getElementById('view-app');
-
-        // Step 1: Jika URL atau Lisensi belum ada, paksa isi Pintu Biru
-        if (!config.apiUrl || !config.license) {
-            if (viewSetup) viewSetup.classList.remove('hidden');
-            if (viewAuth) viewAuth.classList.add('hidden');
-            if (viewApp) viewApp.classList.add('hidden');
-        } else {
-            // Step 2: Jika sudah aktif, tutup Pintu Biru
-            if (viewSetup) viewSetup.classList.add('hidden');
-            
-            // Step 3: Cek status Login (Gunakan window.appState.user lo)
-            if (!window.appState?.user) {
-                // Tampilkan halaman Login (view-auth)
-                if (viewAuth) viewAuth.classList.remove('hidden');
-                if (viewApp) viewApp.classList.add('hidden');
-            } else {
-                // Tampilkan Dashboard App (view-app)
-                if (viewAuth) viewAuth.classList.add('hidden');
-                if (viewApp) viewApp.classList.remove('hidden');
-                if (typeof initDashboard === 'function') initDashboard();
-            }
-        }
-    }
-
-    window.addEventListener('load', checkGatekeeper);
-
-    // --- 4. HANDLER FORM AKTIVASI ---
-    const setupForm = document.getElementById('setupForm');
-    if (setupForm) {
-        setupForm.onsubmit = async (e) => {
-            e.preventDefault();
-            
-            const btn = document.getElementById('btnActivate');
-            const urlInput = document.getElementById('setupUrl').value.trim();
-            const keyInput = document.getElementById('setupLicense').value.trim().toUpperCase();
-
-            if (!urlInput || !keyInput) return window.showToast("Lengkapi data!", "error");
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-circle-notch animate-spin"></i> Memverifikasi...';
-
-            try {
-                // Panggil Bridge kustomer
-                const res = await fetch(`${urlInput}?action=check&key=${keyInput}`);
-                const result = await res.json();
-
-                if (result.success) {
-                    // Simpan permanen ke memori browser
-                    localStorage.setItem('iMers_webAppUrl', urlInput);
-                    localStorage.setItem('iMers_licenseKey', keyInput);
-                    
-                    window.showToast("✅ Aktivasi Berhasil! Membuka Login...", "success");
-                    
-                    // Reload halaman agar Gatekeeper ngebuka View Login
-                    setTimeout(() => window.location.reload(), 1500);
-                } else {
-                    window.showToast("❌ Gagal: " + result.message, "error");
-                    btn.disabled = false;
-                    btn.innerHTML = 'AKTIFKAN APLIKASI';
-                }
-            } catch (err) {
-                window.showToast("❌ Gagal konek! Cek URL & Deployment.", "error");
-                btn.disabled = false;
-                btn.innerHTML = 'AKTIFKAN APLIKASI';
-            }
+        
+        const cleanUrl = SCRIPT_URL.trim();
+        let url = `${cleanUrl}?action=${action}`;
+        
+        let options = { 
+            method: 'GET', 
+            redirect: 'follow',
+            mode: 'cors'
         };
+
+        if (payload) {
+            options.method = 'POST';
+            options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+            options.body = JSON.stringify(payload);
+        }
+
+        try {
+            const response = await fetch(url, options);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+            
+            const text = await response.text(); 
+            let data;
+            try {
+                data = JSON.parse(text); 
+            } catch(e) {
+                console.error("Respon bukan JSON (Kemungkinan GAS Error):", text);
+                throw new Error("Koneksi ditolak Google! Pastikan URL Web App sudah benar.");
+            }
+            
+            if (!data.success) throw new Error(data.error || "Terjadi kesalahan pada server");
+            return data;
+        } catch (err) {
+            console.error(`API Call Error (${action}) -> ${url}:`, err);
+            if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                throw new Error("Koneksi ditolak Google! Pastikan URL Web App sudah benar.");
+            }
+            throw err;
+        }
     }
+
     window.hashPassword = async (password) => {
         const msgBuffer = new TextEncoder().encode(password);
         const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -3534,9 +3458,7 @@
             });
         }, 100);
     };
-    
+
 </script>
-                
-      </div>                
 </body>
 </html>
