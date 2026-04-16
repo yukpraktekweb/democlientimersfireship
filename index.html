@@ -1303,52 +1303,59 @@
     };
 
     async function apiCall(action, payload = null) {
-        if (SCRIPT_URL === "URL_WEB_APP_APPS_SCRIPT_LO_DISINI" || !SCRIPT_URL) {
-            window.showToast("Script URL belum diganti di kode HTML!", "error");
-            throw new Error("URL Belum disetting");
-        }
-        
-        const cleanUrl = SCRIPT_URL.trim();
-        let url = `${cleanUrl}?action=${action}`;
-        
-        let options = { 
-            method: 'GET', 
-            redirect: 'follow',
-            mode: 'cors'
-        };
-
-        if (payload) {
-            options.method = 'POST';
-            options.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
-            options.body = JSON.stringify(payload);
-        }
-
-        try {
-            const response = await fetch(url, options);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status}`);
-            }
-            
-            const text = await response.text(); 
-            let data;
-            try {
-                data = JSON.parse(text); 
-            } catch(e) {
-                console.error("Respon bukan JSON (Kemungkinan GAS Error):", text);
-                throw new Error("Koneksi ditolak Google! Pastikan URL Web App sudah benar.");
-            }
-            
-            if (!data.success) throw new Error(data.error || "Terjadi kesalahan pada server");
-            return data;
-        } catch (err) {
-            console.error(`API Call Error (${action}) -> ${url}:`, err);
-            if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-                throw new Error("Koneksi ditolak Google! Pastikan URL Web App sudah benar.");
-            }
-            throw err;
-        }
+    if (SCRIPT_URL === "URL_WEB_APP_APPS_SCRIPT_LO_DISINI" || !SCRIPT_URL) {
+        window.showToast("Script URL belum diganti di kode HTML!", "error");
+        throw new Error("URL Belum disetting");
     }
+    
+    const cleanUrl = SCRIPT_URL.trim();
+    let url = `${cleanUrl}?action=${action}`;
+    
+    let options = { 
+        method: 'GET', 
+        redirect: 'follow'
+        // mode: 'cors' // Biarkan default atau hapus jika tidak perlu
+    };
+
+    if (payload) {
+        options.method = 'POST';
+        // PERBAIKAN: Gunakan text/plain murni tanpa charset agar tembus CORS Google
+        options.headers = { 'Content-Type': 'text/plain' }; 
+        options.body = JSON.stringify(payload);
+    }
+
+    try {
+        const response = await fetch(url, options);
+        
+        // Cek jika response redirect atau bermasalah
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
+        const text = await response.text(); 
+        let data;
+        
+        try {
+            data = JSON.parse(text); 
+        } catch(e) {
+            // Jika gagal parse, kemungkinan Google ngasih halaman error HTML
+            console.error("Respon bukan JSON. Kemungkinan Izin/Script Error:", text);
+            throw new Error("Gagal memproses data dari Google. Cek izin akses di Apps Script.");
+        }
+        
+        if (!data.success) throw new Error(data.error || "Terjadi kesalahan pada server");
+        return data;
+        
+    } catch (err) {
+        console.error(`API Call Error (${action}) -> ${url}:`, err);
+        
+        // Penanganan error koneksi yang lebih user-friendly
+        if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+            throw new Error("Koneksi ke Google ditolak! Pastikan Deployment sudah 'Anyone'.");
+        }
+        throw err;
+    }
+}
 
     window.hashPassword = async (password) => {
         const msgBuffer = new TextEncoder().encode(password);
