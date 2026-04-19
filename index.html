@@ -197,6 +197,7 @@
                     <div class="flex flex-col">
                         <p class="text-xs font-bold text-slate-500 dark:text-slate-400">Total Pay</p>
                         <p id="coTotalPay" class="text-xl font-black text-red-500 dark:text-red-400">Rp. 0</p>
+                        <p id="coUniqueCodeLabel" class="text-[10px] font-bold text-amber-600 dark:text-amber-400 hidden uppercase tracking-tighter">*Termasuk Kode Unik</p>
                         <!-- Affiliate Label -->
                         <div id="coAffiliateBadgeContainer" class="hidden mt-1">
                             <span class="bg-brand/10 text-brand text-[10px] px-2 py-0.5 rounded-full font-bold inline-flex items-center gap-1">
@@ -353,6 +354,9 @@
                 <a href="#" onclick="navigate('templates')" class="nav-link group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all text-sm font-semibold text-slate-600 dark:text-slate-300" data-target="templates">
                     <i class="ph ph-envelope-simple text-xl text-rose-500 group-[.active]:text-white transition-colors"></i> Notif Templates
                 </a>
+                <a href="#" onclick="navigate('system-settings')" class="nav-link group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all text-sm font-semibold text-slate-600 dark:text-slate-300" data-target="system-settings">
+                    <i class="ph ph-cpu text-xl text-indigo-500 group-[.active]:text-white transition-colors"></i> System Settings
+                </a>
                 <a href="#" onclick="navigate('settings')" class="nav-link group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all text-sm font-semibold text-slate-600 dark:text-slate-300" data-target="settings">
                     <i class="ph ph-gear text-xl text-slate-400 group-[.active]:text-white transition-colors"></i> Admin Settings
                 </a>
@@ -482,7 +486,7 @@
                     <div class="glass border border-blue-200 dark:border-blue-900/50 p-4 rounded-2xl text-sm text-blue-800 dark:text-blue-200 flex items-start sm:items-center gap-3 shadow-sm relative overflow-hidden">
                         <div class="absolute inset-0 bg-blue-500/10 dark:bg-blue-500/20"></div>
                         <i class="ph ph-info text-2xl shrink-0 relative z-10 text-blue-500"></i>
-                        <p class="relative z-10"><strong>iMersFireShip System Active:</strong> Dibangun dengan AppScript & Vercel, bisa jalan tanpa domain & hosting mahal - tes cekout yang ada nilai rupiahnya pake email lain dan aktifkan sendri .</p>
+                        <p class="relative z-10"><strong>iMersFireShip System Active:</strong> Dibangun dengan AppScript & Vercel & Cloudflare, bisa jalan tanpa domain & hosting mahal .</p>
                     </div>
                     <div class="glass rounded-2xl overflow-hidden shadow-xl relative z-10">
                         <div class="overflow-x-auto">
@@ -820,6 +824,56 @@
                 </div>
 
                 <!-- SETTINGS VIEW -->
+                <div id="content-system-settings" class="content-section hidden space-y-8 max-w-4xl">
+    <div class="glass rounded-3xl shadow-xl p-8 border border-white/40 dark:border-slate-700/50">
+        <h3 class="text-xl font-black text-slate-800 dark:text-white mb-6 border-b border-white/40 dark:border-slate-700/50 pb-4 flex items-center gap-2">
+            <i class="ph ph-sliders text-brand"></i> Advanced System Control
+        </h3>
+        <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-5 bg-white/30 dark:bg-slate-800/30 rounded-2xl border border-white/40 dark:border-slate-700/50">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                        <i class="ph ph-hash-straight text-brand"></i> Mode Kode Unik
+                    </label>
+                    <select id="sysUniqueMode" class="w-full px-4 py-3 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand outline-none transition-all dark:text-white">
+                        <option value="TAMBAH">TAMBAH</option>
+                        <option value="KURANG">KURANG</option>
+                    </select>
+                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Digunakan untuk membedakan nominal pembayaran kustomer.</p>
+                </div>
+                <div class="p-5 bg-white/30 dark:bg-slate-800/30 rounded-2xl border border-white/40 dark:border-slate-700/50">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                        <i class="ph ph-arrows-out text-brand"></i> Maksimal Angka Unik
+                    </label>
+                    <input type="number" id="sysUniqueMax" placeholder="500" class="w-full px-4 py-3 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand dark:text-white">
+                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Batas angka acak (misal: 1 - 500).</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-5 bg-white/30 dark:bg-slate-800/30 rounded-2xl border border-white/40 dark:border-slate-700/50">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                        <i class="ph ph-lock-laminated text-brand"></i> Affiliate Lock
+                    </label>
+                    <select id="sysAffLock" class="w-full px-4 py-3 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand outline-none transition-all dark:text-white">
+                        <option value="TRUE">LOCKED</option>
+                        <option value="FALSE">UNLOCKED</option>
+                    </select>
+                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Aktif/nonaktifkan sistem komisi serta cookies referal.</p>
+                </div>
+                <div class="p-5 bg-white/30 dark:bg-slate-800/30 rounded-2xl border border-white/40 dark:border-slate-700/50">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                        <i class="ph ph-clock-countdown text-brand"></i> Cookie Expiry (Hari)
+                    </label>
+                    <input type="number" id="sysCookieDays" placeholder="30" class="w-full px-4 py-3 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-brand dark:text-white">
+                    <p class="text-[10px] text-slate-500 mt-2 ml-1">Lama link affiliate nempel di browser kustomer.</p>
+                </div>
+            </div>
+            <div class="pt-4">
+                <button onclick="window.saveSystemSettings()" id="btnSaveSys" class="bg-gradient-to-r from-brand to-purple-600 hover:from-brandHover hover:to-purple-700 text-white px-8 py-4 rounded-2xl font-black transition-all shadow-xl shadow-brand/30 w-full sm:w-auto">SIMPAN KONFIGURASI SISTEM</button>
+            </div>
+        </div>
+    </div>
+</div>
                 <div id="content-settings" class="content-section hidden space-y-8 max-w-4xl">
                     <div class="glass rounded-3xl shadow-xl p-8 border border-white/40 dark:border-slate-700/50">
                         <h3 class="text-xl font-black text-slate-800 dark:text-white mb-6 border-b border-white/40 dark:border-slate-700/50 pb-4">Admin Settings</h3>
@@ -859,7 +913,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                                
                             <!-- WA Gateway / Notification Settings -->
                             <div class="pt-6 border-t border-white/40 dark:border-slate-700/50">
                                 <h4 class="font-black text-slate-800 dark:text-white mb-4 text-lg">WhatsApp API Gateway</h4>
@@ -1277,7 +1331,7 @@
      JAVASCRIPT LOGIC (app.js)
      ========================================== -->
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_kSojhYotVUIpRyogw6b4h0q-IVWaO5EsH9iaGYDMzzBe-BTyUad37M6axhIAau_l/exec"; // GANTI DENGAN URL WEB APP LO
+    const SCRIPT_URL = "URL_WEB_APP_APPS_SCRIPT_LO_DISINI"; // GANTI DENGAN URL WEB APP LO
 
     window.showToast = (m, t = 'success') => {
         const el = document.getElementById('toast');
@@ -1490,10 +1544,38 @@
         const checkoutId = urlParams.get('checkout');
         const refId = urlParams.get('ref'); 
         
-        if(refId) localStorage.setItem('affiliateRef', refId);
-        
+        // 1. LOGIKA SMART COOKIES (Ambil durasi dari System_Settings di Google Sheet)
+        if (refId) {
+            const now = new Date().getTime();
+            // Default 30 hari jika gagal ambil settingan
+            let durationDays = 30;
+            try {
+                const sysRes = await apiCall('getSystemSettings');
+                if (sysRes.success && sysRes.data.AFFILIATE_COOKIE_DURATION) {
+                durationDays = parseInt(sysRes.data.AFFILIATE_COOKIE_DURATION);
+            }
+            } catch (e) { console.warn("Pake default cookie 30 hari"); }
+
+            const expiry = now + (durationDays * 24 * 60 * 60 * 1000);
+            const cookieObj = { value: refId, expire: expiry };
+            
+            localStorage.setItem('affiliateRefObj', JSON.stringify(cookieObj));
+            localStorage.setItem('affiliateRef', refId); // Backup string lama biar gak error fungsi lain
+        }
+
+        // 2. CEK APAKAH COOKIE SUDAH EXPIRED
+        const savedCookie = localStorage.getItem('affiliateRefObj');
+        if (savedCookie) {
+            const item = JSON.parse(savedCookie);
+            if (new Date().getTime() > item.expire) {
+                localStorage.removeItem('affiliateRefObj');
+                localStorage.removeItem('affiliateRef');
+            }
+        }
+
+        // 3. LOAD USER DATA (Kode asli lo)
         const savedUser = localStorage.getItem('iMersUser');
-        if(savedUser) {
+        if (savedUser) {
             window.appState.user = JSON.parse(savedUser);
         }
 
@@ -1561,7 +1643,7 @@
         if (userLicenseCodeEl) userLicenseCodeEl.innerText = user.license || 'TIDAK-ADA-LISENSI';
         
         if (user.role === 'user') {
-            document.querySelectorAll('[data-target="products"], [data-target="orders"], [data-target="coupons"], [data-target="users"], [data-target="broadcast"], [data-target="templates"], [data-target="settings"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[data-target="products"], [data-target="orders"], [data-target="coupons"], [data-target="users"], [data-target="broadcast"], [data-target="templates"], [data-target="settings"], [data-target="system-settings"]').forEach(el => el.classList.add('hidden'));
         }
 
         if (user.role !== 'admin') {
@@ -1588,13 +1670,14 @@
         try {
             window.showToast("Memuat data dari server...", "info");
             
-            const [prodRes, orderRes, coupRes, tmplRes, userRes, setRes] = await Promise.all([
+            const [prodRes, orderRes, coupRes, tmplRes, userRes, setRes, sysRes] = await Promise.all([
                 apiCall('getProducts'),
                 apiCall('getOrders'),
                 apiCall('getCoupons'),
                 apiCall('getTemplates'),
                 apiCall('getUsers'),
-                apiCall('getSettings')
+                apiCall('getSettings'),
+                apiCall('getSystemSettings')
             ]);
             
             window.appState.products = prodRes.data || [];
@@ -1604,6 +1687,9 @@
             window.appState.usersData = userRes.data || [];
             if (setRes.data && !Array.isArray(setRes.data)) {
                 window.appState.settings = setRes.data;
+            }
+            if (sysRes && sysRes.data) {
+                window.appState.systemSettings = sysRes.data;
             }
 
             if(window.appState.products.length) window.appState.products.sort((a,b) => b.createdAt - a.createdAt);
@@ -1643,6 +1729,7 @@
             window.renderSettingsBankList();
             window.renderUsersTable();
             window.renderAffiliateList();
+            window.renderSystemSettings();
 
             if (window.appState.user && window.appState.user.role !== 'admin') {
                 const btnAdd = document.getElementById('btnAddUser');
@@ -1668,7 +1755,7 @@
                     `;
                 });
             }
-            
+            window.renderSystemSettings();
             window.showToast("Data berhasil dimuat!", "success");
         } catch (err) {
             console.error("Gagal memuat sebagian data:", err);
@@ -1888,7 +1975,7 @@
         window.location.reload();
     };
 
-    // --- NAVIGATION & UI LOGIC ---
+// --- NAVIGATION & UI LOGIC (FIXED) ---
     window.navigate = (targetId) => {
         document.querySelectorAll('.nav-link').forEach(link => {
             if(link.dataset.target === targetId) {
@@ -1912,6 +1999,7 @@
             'templates': 'Notification Templates',
             'broadcast': 'Marketing Broadcast',
             'settings': 'Admin Settings',
+            'system-settings': 'Advanced System Control',
             'profile': 'My Profile'
         };
         const pageTitleEl = document.getElementById('pageTitle');
@@ -1920,6 +2008,14 @@
         document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
         const targetEl = document.getElementById('content-' + targetId);
         if (targetEl) targetEl.classList.remove('hidden');
+
+        // --- INI KUNCINYA BIAR GAK BLANK ---
+        if (targetId === 'system-settings') {
+            if (typeof window.renderSystemSettings === 'function') {
+                window.renderSystemSettings();
+            }
+        }
+        // -----------------------------------
 
         if(window.innerWidth < 768 && window.appState.isSidebarOpen) {
             window.toggleMobileMenu();
@@ -3117,34 +3213,60 @@
     // ==========================================
 
     window.loadCheckoutProduct = async (id) => { 
-        try{ 
-            const [pr,sr]=await Promise.all([apiCall('getProducts'),apiCall('getSettings')]); 
-            const p=(pr.data||[]).find(x=>String(x.id)===String(id)); 
-            if(!p) return document.getElementById('view-checkout').innerHTML="<h2 class='text-center mt-20 font-black'>Not Found</h2>"; 
-            window.appState.currentCheckoutProduct=p; 
-            window.appState.currentCheckoutUniqueCode=Math.floor(Math.random()*900)+100; 
-            if(sr?.data) window.appState.settings=sr.data; 
-            document.getElementById('coProdTitle').innerText=p.title; 
-            document.getElementById('coProdPrice').innerText=window.formatRp(p.price); 
-            const ic=document.getElementById('coProdImageContainer'); 
+        try { 
+            // 1. Ambil data secara bersamaan termasuk settingan sistem (Kode Unik/Lock)
+            const [pr, sr, sysSet] = await Promise.all([
+                apiCall('getProducts'),
+                apiCall('getSettings'),
+                apiCall('getSystemSettings') 
+            ]); 
+            
+            const p = (pr.data || []).find(x => String(x.id) === String(id)); 
+            if(!p) return document.getElementById('view-checkout').innerHTML = "<h2 class='text-center mt-20 font-black'>Not Found</h2>"; 
+            
+            window.appState.currentCheckoutProduct = p; 
+            
+            // Generate Kode Unik Default (Fallback)
+            window.appState.currentCheckoutUniqueCode = Math.floor(Math.random() * 900) + 100; 
+
+            if(sr?.data) window.appState.settings = sr.data;
+            if(sysSet?.data) window.appState.systemSettings = sysSet.data;
+
+            // 2. AMBIL KODE UNIK DINAMIS DARI SERVER (OVERWRITE FALLBACK)
+            const priceRes = await apiCall('getCheckoutPrice', { basePrice: p.price });
+            if(priceRes.success) {
+                window.appState.currentCheckoutUniqueCode = priceRes.uniqueCode;
+                window.appState.uniqueCodeMode = priceRes.mode; // TAMBAH atau KURANG
+            }
+
+            document.getElementById('coProdTitle').innerText = p.title; 
+            document.getElementById('coProdPrice').innerText = window.formatRp(p.price); 
+            
+            const ic = document.getElementById('coProdImageContainer'); 
             if(p.imageUrl){
-                ic.innerHTML=`<img src="${p.imageUrl}" class="w-full h-full object-cover">`;
-                ic.className="w-14 h-14 rounded-xl overflow-hidden shrink-0";
+                ic.innerHTML = `<img src="${p.imageUrl}" class="w-full h-full object-cover">`;
+                ic.className = "w-14 h-14 rounded-xl overflow-hidden shrink-0";
             } 
+
             window.recalculateCheckout(); 
             window.renderCheckoutPaymentMethods(); 
-            const r=localStorage.getItem('affiliateRef'); 
+
+            const r = localStorage.getItem('affiliateRef'); 
             if(r){
                 document.getElementById('coAffiliateBadgeContainer').classList.remove('hidden');
-                document.getElementById('coAffiliateNameDisplay').innerText=r.toUpperCase();
+                document.getElementById('coAffiliateNameDisplay').innerText = r.toUpperCase();
             } 
-        } catch(e) { console.error(e); } 
+        } catch(e) { 
+            console.error(e); 
+            window.showToast("Gagal memuat data checkout", "error");
+        } 
     };
 
     window.recalculateCheckout = () => { 
         const p = window.appState.currentCheckoutProduct;
         const c = window.appState.currentCheckoutCoupon;
         const u = window.appState.currentCheckoutUniqueCode; 
+        const mode = window.appState.uniqueCodeMode || "KURANG";
         
         if(!p) return; 
 
@@ -3161,183 +3283,225 @@
             document.getElementById('coDiscountRow').classList.add('hidden');
         } 
         
-        // LOGIKA BARU UNTUK HARGA GRATIS / DISKON 100%
+       // --- LOGIKA HARGA 0 / KODE UNIK (FIXED & CLEAN) ---
         let t = 0;
-        let fee = 113; // Default Potongan Fee
-        let uniqueCode = u; // Default Kode Unik
-        
-        // Jika Harga 0 ATAU Total setelah diskon <= 0 (Gratisan)
-        if (p.price === 0 || (p.price - d) <= 0) {
-            fee = 0;          // Nol-kan fee
-            uniqueCode = 0;   // Nol-kan kode unik
-            t = 0;            // Total fix 0
+        let uniqueCode = u; 
+        const feeRow = document.getElementById('coFee').closest('.flex'); 
+        const labelElement = document.getElementById('coFee').previousElementSibling;
+
+        // 1. Cek apakah produk Gratis (setelah diskon)
+        const isFree = (p.price === 0 || (p.price - d) <= 0);
+
+        if (isFree) {
+            t = 0;
+            uniqueCode = 0;
+            if(feeRow) feeRow.classList.add('hidden');
         } else {
-            // Kalau berbayar, jalankan hitungan normal
-            t = p.price - fee - d + uniqueCode; 
-            if (t <= 0) t = 0;
+            // Jika Berbayar
+            if(feeRow) feeRow.classList.remove('hidden');
+            if(labelElement) labelElement.innerText = 'Kode Unik';
+
+            let baseAfterDiscount = p.price - d;
+            
+            // Hitung Total berdasarkan mode TAMBAH/KURANG
+            if (mode === "TAMBAH") {
+                t = baseAfterDiscount + uniqueCode;
+            } else {
+                t = baseAfterDiscount - uniqueCode;
+            }
+            if (t < 0) t = 0;
         }
 
-        // Tampilkan Fee ke layar
-        document.getElementById('coFee').innerText = fee === 0 ? 'Rp. 0' : `- Rp. ${fee}`;
+        // 2. RENDER NOMINAL KE UI
+        // Baris Kode Unik (Fee Row)
+        document.getElementById('coFee').innerText = isFree ? 'Rp 0' : window.formatRp(uniqueCode);
 
-        // Format Angka Total ke Layar
+        // Update Label Hint di bawah total (yang ada angka merahnya)
+        const uniqueLabel = document.getElementById('coUniqueCodeLabel');
+        if(uniqueLabel) {
+            if(!isFree && uniqueCode > 0) {
+                uniqueLabel.innerText = `*Sudah termasuk kode unik (${mode === 'TAMBAH' ? '+' : '-'}${uniqueCode})`;
+                uniqueLabel.classList.remove('hidden');
+            } else {
+                uniqueLabel.classList.add('hidden');
+            }
+        }
+
+        // 3. RENDER TOTAL HARGA (ORDER DETAILS & STICKY BAR)
         if (t === 0) {
-            document.getElementById('coTotal').innerHTML = `Rp. 0`; 
-            document.getElementById('coTotalPay').innerHTML = `Rp. 0`; 
+            const zeroText = "Rp 0";
+            document.getElementById('coTotal').innerHTML = zeroText; 
+            if(document.getElementById('coTotalPay')) document.getElementById('coTotalPay').innerHTML = zeroText; 
         } else {
-            const ts = String(t).padStart(4, '0');
+            // Efek angka merah di 3 digit terakhir
+            const ts = String(Math.floor(t)).padStart(4, '0');
             const r = ts.slice(0, -3);
             const l = ts.slice(-3); 
             const formattedRest = new Intl.NumberFormat('id-ID').format(Number(r));
             
-            const finalHtml = `Rp. ${formattedRest}.<span class="text-red-500 dark:text-red-400">${l}</span>`;
+            const finalHtml = `Rp ${formattedRest}.<span class="text-red-500 dark:text-red-400 font-black">${l}</span>`;
+            
             document.getElementById('coTotal').innerHTML = finalHtml; 
-            document.getElementById('coTotalPay').innerHTML = finalHtml; 
+            if(document.getElementById('coTotalPay')) document.getElementById('coTotalPay').innerHTML = finalHtml;
         }
     };
 
     window.applyVoucher = async () => { 
-        const cd=document.getElementById('coVoucherInput').value.toUpperCase().trim(); 
+        const cd = document.getElementById('coVoucherInput').value.toUpperCase().trim(); 
         if(!cd) return; 
-        try{ 
+        try { 
             const r = await apiCall('getCoupons'); 
-            const f = (r.data||[]).find(x=>x.code===cd); 
-            if(f && (f.applicableProductId==='all'||String(f.applicableProductId)===String(window.appState.currentCheckoutProduct.id))){ 
-                window.appState.currentCheckoutCoupon=f; 
+            const f = (r.data||[]).find(x => x.code === cd); 
+            if(f && (f.applicableProductId === 'all' || String(f.applicableProductId) === String(window.appState.currentCheckoutProduct.id))){ 
+                window.appState.currentCheckoutCoupon = f; 
                 window.showToast("Kupon diterapkan!"); 
                 window.recalculateCheckout(); 
             } else {
-                window.appState.currentCheckoutCoupon=null; 
+                window.appState.currentCheckoutCoupon = null; 
                 window.recalculateCheckout(); 
-                window.showToast("Kupon tidak valid!","error");
+                window.showToast("Kupon tidak valid!", "error");
             } 
-        } catch(e) {} 
+        } catch(e) { console.error(e); } 
     };
 
     window.renderCheckoutPaymentMethods = () => { 
-        const c=document.getElementById('coPaymentMethods'), s=window.appState.settings; 
+        const c = document.getElementById('coPaymentMethods'), s = window.appState.settings; 
         if(!c) return; 
-        c.innerHTML=''; 
-        (s?.banks||[]).forEach((b,i)=>{ 
-            c.innerHTML+=`<label class="flex justify-between p-4 border rounded-xl cursor-pointer bg-white/50"><div class="flex gap-3"><input type="radio" name="paymentMethod" value="Manual-${b.name}" ${i===0?'checked':''}> <div class="font-bold text-sm">Bank ${b.name}</div></div></label>`; 
+        c.innerHTML = ''; 
+        (s?.banks||[]).forEach((b, i) => { 
+            c.innerHTML += `<label class="flex justify-between p-4 border rounded-xl cursor-pointer bg-white/50"><div class="flex gap-3"><input type="radio" name="paymentMethod" value="Manual-${b.name}" ${i === 0 ? 'checked' : ''}> <div class="font-bold text-sm">Bank ${b.name}</div></div></label>`; 
         }); 
         if(s?.gateways?.duitku){
-            c.innerHTML+=`<label class="flex justify-between p-4 border rounded-xl cursor-pointer bg-white/50"><div class="flex gap-3"><input type="radio" name="paymentMethod" value="Duitku"> <div class="font-bold text-sm">Duitku</div></div></label>`;
+            c.innerHTML += `<label class="flex justify-between p-4 border rounded-xl cursor-pointer bg-white/50"><div class="flex gap-3"><input type="radio" name="paymentMethod" value="Duitku"> <div class="font-bold text-sm">Duitku</div></div></label>`;
         } 
     };
 
-     window.submitCheckout = async () => {
-    const btn = document.getElementById('btnSubmitCheckout');
-    if (!btn) return;
+    window.submitCheckout = async () => {
+        const btn = document.getElementById('btnSubmitCheckout');
+        if (!btn) return;
 
-    btn.disabled = true;
-    btn.innerHTML = '<i class="ph ph-circle-notch animate-spin"></i> Processing...';
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ph ph-circle-notch animate-spin"></i> Processing...';
 
-    try {
-        // AMBIL DATA DARI FORM
-        const pd = window.appState.currentCheckoutProduct;
-        const n = document.getElementById('coName').value.trim();
-        const e = document.getElementById('coEmail').value.trim();
-        const w = window.formatPhoneNumber(document.getElementById('coWA').value);
-        const p = document.getElementById('coPassword').value;
-        const d = window.appState.currentCheckoutCoupon?.discount || 0;
-        const unique = window.appState.currentCheckoutUniqueCode || 0;
-        
-        // Nilai total bayar (t)
-        const t = Number(pd.price) + unique - d;
-        const finalStatus = t <= 0 ? 'Paid' : 'Pending';
+        try {
+            // AMBIL DATA DARI FORM (LOGIKA ASLI LO)
+            const pd = window.appState.currentCheckoutProduct;
+            const n = document.getElementById('coName').value.trim();
+            const e = document.getElementById('coEmail').value.trim();
+            const w = window.formatPhoneNumber(document.getElementById('coWA').value);
+            const p = document.getElementById('coPassword').value;
+            const selectedRadio = document.querySelector('input[name="paymentMethod"]:checked');
+            const selectedMethod = selectedRadio ? selectedRadio.value : 'Bank Transfer';
+            
+            // Hitung ulang untuk pengiriman data ke Google Sheets
+            const c = window.appState.currentCheckoutCoupon;
+            const d = c ? (c.type === 'percent' ? pd.price * (c.value / 100) : c.value) : 0;
+            const unique = window.appState.currentCheckoutUniqueCode || 0;
+            const mode = window.appState.uniqueCodeMode || "KURANG";
+            
+            let t = 0;
+            if (pd.price > 0 && (pd.price - d) > 0) {
+                t = mode === "TAMBAH" ? (pd.price - d + unique) : (pd.price - d - unique);
+            } else {
+                t = 0;
+            }
 
-        if (!n || !e || !w) throw new Error("Nama, Email, dan WA wajib diisi!");
+            const finalStatus = t <= 0 ? 'Paid' : 'Pending';
 
-        // 1. KIRIM DATA KE GOOGLE SHEETS
-        await apiCall('saveOrder', {
-            customerName: n,
-            customerEmail: e,
-            customerWA: w,
-            productId: pd.id,
-            productTitle: pd.title,
-            basePrice: pd.price,
-            discountApplied: d,
-            totalPay: t,
-            paymentMethod: 'Bank Transfer',
-            status: finalStatus,
-            userPasswordHash: await window.hashPassword(p),
-            affiliateRef: localStorage.getItem('affiliateRef') || null
-        });
+            // PROTEKSI WAJIB ISI
+            if (!n || !e || !w) throw new Error("Nama, Email, dan WA wajib diisi!");
 
-        // 2. TAMPILAN INSTRUKSI PEMBAYARAN (GANTI TOTAL ISI VIEW-CHECKOUT)
-        const successView = document.getElementById('view-checkout');
-        
-        if (t <= 0) {
-            // Tampilan Gratis
-            successView.innerHTML = `
-                <div class="max-w-md mx-auto py-20 px-6 text-center animate-in fade-in duration-500">
-                    <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20">
-                        <i class="ph-fill ph-check-circle text-5xl"></i>
-                    </div>
-                    <h2 class="text-3xl font-black mb-4">Akses Aktif!</h2>
-                    <p class="text-slate-500 mb-8">Produk gratis Anda sudah bisa diakses. Silakan login untuk memulai.</p>
-                    <button onclick="window.location.href='/'" class="w-full py-4 bg-brand text-white rounded-2xl font-black shadow-xl shadow-brand/30">Login Sekarang</button>
-                </div>`;
-        } else {
-            // TAMPILAN BERBAYAR (INSTRUKSI TRANSFER)
-            const banks = window.appState.settings.banks || [];
-            let bankListHtml = banks.map(b => `
-                <div class="bg-white/60 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 mb-3">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${b.name}</span>
-                        <i class="ph ph-bank text-brand"></i>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="text-xl font-black text-slate-800 dark:text-white">${b.no}</div>
-                        <button onclick="navigator.clipboard.writeText('${b.no}'); window.showToast('Rekening disalin')" class="text-brand p-2 hover:bg-brand/10 rounded-lg transition-colors">
-                            <i class="ph ph-copy"></i>
-                        </button>
-                    </div>
-                    <div class="text-xs text-slate-500 font-medium mt-1">a.n <span class="uppercase">${b.owner}</span></div>
-                </div>`).join('');
+            // 1. KIRIM DATA KE GOOGLE SHEETS
+            await apiCall('saveOrder', {
+                customerName: n,
+                customerEmail: e,
+                customerWA: w,
+                productId: pd.id,
+                productTitle: pd.title,
+                basePrice: pd.price,
+                discountApplied: d,
+                uniqueCode: unique, 
+                totalPay: t,
+                paymentMethod: selectedMethod,
+                status: finalStatus,
+                userPasswordHash: window.appState.user ? window.appState.user.password : await window.hashPassword(p),
+                affiliateRef: localStorage.getItem('affiliateRef') || null
+            });
 
-            successView.innerHTML = `
-                <div class="max-w-md mx-auto py-10 px-4 text-center animate-in zoom-in duration-300">
-                    <h2 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Order Diterima!</h2>
-                    <p class="text-sm text-slate-500 mb-8 font-medium">Lakukan transfer agar akses produk terbuka.</p>
+            // 2. TAMPILAN INSTRUKSI PEMBAYARAN
+            const successView = document.getElementById('view-checkout');
+            
+            if (t <= 0) {
+                // Tampilan Gratis (Langsung Login)
+                successView.innerHTML = `
+                    <div class="max-w-md mx-auto py-20 px-6 text-center animate-in fade-in duration-500">
+                        <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20">
+                            <i class="ph-fill ph-check-circle text-5xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-black mb-4">Akses Aktif!</h2>
+                        <p class="text-slate-500 mb-8">Produk gratis Anda sudah bisa diakses. Silakan login untuk memulai.</p>
+                        <button onclick="window.location.href='/'" class="w-full py-4 bg-brand text-white rounded-2xl font-black shadow-xl shadow-brand/30">Login Sekarang</button>
+                    </div>`;
+            } else {
+                // TAMPILAN BERBAYAR (INSTRUKSI TRANSFER)
+                const banks = window.appState.settings.banks || [];
+                let bankListHtml = banks.map(b => `
+                    <div class="bg-white/60 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 mb-3 text-left">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${b.name}</span>
+                            <i class="ph ph-bank text-brand"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-xl font-black text-slate-800 dark:text-white">${b.no}</div>
+                            <button onclick="navigator.clipboard.writeText('${b.no}'); window.showToast('Rekening disalin')" class="text-brand p-2 hover:bg-brand/10 rounded-lg transition-colors">
+                                <i class="ph ph-copy"></i>
+                            </button>
+                        </div>
+                        <div class="text-xs text-slate-500 font-medium mt-1">a.n <span class="uppercase">${b.owner}</span></div>
+                    </div>`).join('');
 
-                    <div class="glass p-6 rounded-[2.5rem] border border-white/50 dark:border-slate-800 shadow-2xl relative overflow-hidden text-left mb-8">
-                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-brand/10 rounded-full blur-3xl"></div>
-                        <div class="relative z-10">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-1">Total Transfer</p>
-                            <div class="text-3xl font-black text-brand text-center mb-6 flex items-center justify-center gap-2">
-                                <span>${window.formatRp(t)}</span>
-                                <button onclick="navigator.clipboard.writeText('${t}'); window.showToast('Nominal disalin')" class="text-slate-300 hover:text-brand">
-                                    <i class="ph ph-copy text-sm"></i>
-                                </button>
-                            </div>
+                successView.innerHTML = `
+                    <div class="max-w-md mx-auto py-10 px-4 text-center animate-in zoom-in duration-300">
+                        <h2 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Order Diterima!</h2>
+                        <p class="text-sm text-slate-500 mb-8 font-medium">Lakukan transfer agar akses produk terbuka.</p>
 
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-3">Rekening Pembayaran:</p>
-                            ${bankListHtml || '<p class="text-center text-xs text-slate-400 italic">Data bank belum diatur di admin.</p>'}
-                            
-                            <div class="mt-6 p-4 bg-brand/5 dark:bg-brand/10 rounded-2xl border border-brand/10 text-center">
-                                <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                                    <strong>PENTING:</strong> Transfer <strong>SAMA PERSIS</strong> sampai digit terakhir untuk verifikasi otomatis.
-                                </p>
+                        <div class="glass p-6 rounded-[2.5rem] border border-white/50 dark:border-slate-800 shadow-2xl relative overflow-hidden text-left mb-8">
+                            <div class="absolute -right-10 -top-10 w-32 h-32 bg-brand/10 rounded-full blur-3xl"></div>
+                            <div class="relative z-10">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-1">Total Transfer</p>
+                                <div class="text-3xl font-black text-brand text-center mb-1 flex items-center justify-center gap-2">
+                                    <span>${window.formatRp(t)}</span>
+                                    <button onclick="navigator.clipboard.writeText('${t}'); window.showToast('Nominal disalin')" class="text-slate-300 hover:text-brand">
+                                        <i class="ph ph-copy text-sm"></i>
+                                    </button>
+                                </div>
+                                <p class="text-center text-[10px] font-bold text-amber-600 uppercase mb-6">*Termasuk Kode Unik: ${unique}</p>
+
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-3">Rekening Pembayaran:</p>
+                                ${bankListHtml || '<p class="text-center text-xs text-slate-400 italic">Data bank belum diatur di admin.</p>'}
+                                
+                                <div class="mt-6 p-4 bg-brand/5 dark:bg-brand/10 rounded-2xl border border-brand/10 text-center">
+                                    <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                                        <strong>PENTING:</strong> Transfer <strong>SAMA PERSIS</strong> sampai digit terakhir (<strong>${String(t).slice(-3)}</strong>) untuk verifikasi otomatis.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <button onclick="window.location.href='/'" class="w-full py-4 bg-brand text-white rounded-2xl font-black shadow-xl shadow-brand/30 transition-all mb-4">
-                        Ke Dashboard
-                    </button>
-                    <p class="text-xs text-slate-400 italic font-medium text-center">Instruksi ini juga sudah kami kirim ke WhatsApp Anda.</p>
-                </div>`;
+                        <button onclick="window.location.href='/'" class="w-full py-4 bg-brand text-white rounded-2xl font-black shadow-xl shadow-brand/30 transition-all mb-4">
+                            Ke Dashboard
+                        </button>
+                        <p class="text-xs text-slate-400 italic font-medium text-center">Instruksi ini juga sudah kami kirim ke WhatsApp Anda.</p>
+                    </div>`;
+            }
+            window.showToast("Order Berhasil Dibuat!");
+        } catch (err) {
+            window.showToast(err.message, "error");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'CREATE ORDER';
         }
-        window.showToast("Order Berhasil Dibuat!");
-    } catch (err) {
-        window.showToast(err.message, "error");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'CREATE ORDER';
-    }
-};
+    };
 
     window.renderOrdersTable = () => { 
         const tb=document.getElementById('ordersTableBody'); 
@@ -3392,7 +3556,6 @@
                 if(bn) bk.push({name: bn, no: e.querySelector('.b-no').value, owner: e.querySelector('.b-owner').value});
             }); 
             
-            // AMBIL DATA NOTIFIKASI (WA, EMAIL, TELEGRAM)
             const notifData = {
                 waProvider: document.getElementById('notifWaProvider')?.value || 'fonnte',
                 waToken: document.getElementById('notifWaToken')?.value || '',
@@ -3405,7 +3568,6 @@
 
             let img = f ? await window.compressImage(f, 400) : lu; 
             
-            // KIRIM SEMUA DATA KE GOOGLE SHEETS
             await apiCall('saveSettings', {
                 appName: n, 
                 primaryColor: c,
@@ -3421,32 +3583,88 @@
         } catch(e) { window.showToast(e.message, "error"); } 
     };
 
+    // --- LOGIKA BARU: SYSTEM SETTINGS (KONTROL PANEL) ---
+    window.renderSystemSettings = () => {
+    try {
+        // Ambil data dari state. Jika kosong, gunakan default agar tidak crash.
+        const config = window.appState.systemSettings || {};
+        
+        console.log("Rendering System Settings with data:", config); // Cek di console F12
+
+        const elements = {
+            'sysUniqueMode': config.KODE_UNIK_MODE || 'TAMBAH',
+            'sysUniqueMax': config.KODE_UNIK_MAX || '500',
+            'sysAffLock': config.AFFILIATE_LOCK || 'TRUE',
+            'sysCookieDays': config.AFFILIATE_COOKIE_DURATION || '30'
+        };
+
+        // Looping untuk isi data ke input secara aman
+        for (const [id, value] of Object.entries(elements)) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = value;
+            } else {
+                console.warn(`Elemen dengan ID ${id} tidak ditemukan di HTML!`);
+            }
+        }
+    } catch (error) {
+        console.error("Gagal render System Settings:", error);
+    }
+};
+    window.saveSystemSettings = async () => {
+    const btn = document.getElementById('btnSaveSys'); 
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ph ph-circle-notch animate-spin"></i> Saving...';
+    }
+
+    const payload = {
+        KODE_UNIK_MODE: document.getElementById('sysUniqueMode').value,
+        KODE_UNIK_MAX: document.getElementById('sysUniqueMax').value,
+        AFFILIATE_LOCK: document.getElementById('sysAffLock').value,
+        AFFILIATE_COOKIE_DURATION: document.getElementById('sysCookieDays').value
+    };
+
+    try {
+        const res = await apiCall('saveSystemSettings', payload);
+        if (res.success) {
+            window.showToast("Konfigurasi sistem berhasil disimpan!", "success");
+            window.appState.systemSettings = payload; 
+        } else {
+            window.showToast(res.error || "Gagal menyimpan", "error");
+        }
+    } catch (e) {
+        window.showToast("Terjadi kesalahan koneksi", "error");
+        console.error(e);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'SIMPAN KONFIGURASI SISTEM';
+        }
+    }
+};
+    // -----------------------------------------------------
+
     window.applyLogo = (src) => { 
         const l=document.getElementById('appLogoSidebar'); 
         if(src){ if(l){l.src=src;l.classList.remove('hidden');} } else { if(l){l.src='';l.classList.add('hidden');} } 
     };
 
-    // FIXED: Menambahkan kembali fungsi initChart yang hilang sebelumnya
     window.initChart = () => {
         setTimeout(() => {
             const canvas = document.getElementById('salesChart');
-            // Pastikan elemen canvas ada dan user yang login adalah admin
             if(!canvas || !window.appState.user || window.appState.user.role !== 'admin') return;
-
             let existingChart = Chart.getChart(canvas);
             if (existingChart) existingChart.destroy();
-            
             const isDark = document.documentElement.classList.contains('dark');
             const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
             const textColor = isDark ? '#cbd5e1' : '#64748b';
-
             new Chart(canvas.getContext('2d'), {
                 type: 'line',
                 data: {
                     labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
                     datasets: [{
                         label: 'Revenue',
-                        // Mock data untuk tampilan grafik
                         data: [1200000, 1900000, 3000000, 5000000, 4200000, 6800000, 12450000], 
                         borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-color').trim() || '#4f46e5',
                         backgroundColor: 'rgba(79, 70, 229, 0.1)',
@@ -3465,7 +3683,7 @@
             });
         }, 100);
     };
-
+    
 </script>
 </body>
 </html>
